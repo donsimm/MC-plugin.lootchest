@@ -4,6 +4,8 @@ Dieses Repo erzeugt aus dem **originalen LootChest-JAR** (Black_Eyes, hier 2.5.9
 Minecraft-/Paper-Versionen startet (z. B. 26.2). Ein Quellcode des Plugins liegt nicht vor, deshalb wird das fertige JAR
 per Bytecode-Patch (ASM) angepasst. Der Patch ist so gebaut, dass er bei künftigen Versionen ohne Änderung weiterläuft.
 
+**Original-Plugin:** https://github.com/Guarmanda/LootChest/releases (Spigot-Ressource `61564`). Dieses Repo enthält nur den Kompatibilitäts-Patch und das daraus gebaute JAR.
+
 **Fertiges JAR:** `dist/Lootchest-2.5.9-compat.jar` → in den `plugins/`-Ordner des Servers legen.
 
 ## Ursache des Fehlers
