@@ -17,8 +17,14 @@ public class CompatTest {
             Version v = Version.fromMinecraftVersion(bukkitVersion.split("-")[0], platform);
             System.out.println(bukkitVersion + " / " + platform + " -> " + v);
         }
+        try {
+            System.out.println("Main.getCompleteVersion = " + fr.black_eyes.lootchest.Main.getCompleteVersion()
+                    + ", Main.getVersion = " + fr.black_eyes.lootchest.Main.getVersion());
+        } catch (Throwable t) {
+            System.out.println("Main.* FEHLER: " + t);
+        }
         System.out.println("Version.CURRENT = " + Version.CURRENT);
-        for (String s : new String[]{"26_2", "26_2_1", "26_1", "26_1_2", "27_0", "1_21_11", "1_21_4", "1_21", "9_9"}) {
+        for (String s : new String[]{"26_2_build_121", "26_2", "26_2_1", "26_1", "26_1_2", "27_0", "1_21_11", "1_21_4", "1_21", "9_9"}) {
             System.out.println("Fall " + s + " -> " + FallClassResolver.resolve(s));
         }
     }

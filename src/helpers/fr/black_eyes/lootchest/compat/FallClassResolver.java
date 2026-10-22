@@ -20,7 +20,14 @@ public final class FallClassResolver {
         return CACHE.computeIfAbsent(version, FallClassResolver::lookup);
     }
 
-    private static String lookup(String version) {
+    /** "26_2_build_121" -> "26_2" (Paper 26.x haengt "build.<nr>" an die Version). */
+    private static String numericPrefix(String version) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("^\\d+(_\\d+)*").matcher(version);
+        return m.find() ? m.group() : version;
+    }
+
+    private static String lookup(String raw) {
+        String version = numericPrefix(raw);
         if (exists(version)) {
             return version;
         }

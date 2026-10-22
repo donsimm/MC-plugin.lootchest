@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 public final class Patcher {
     private static final String VERSION_CLASS = "fr/black_eyes/holograms/api/utils/reflect/Version";
     private static final String PLATFORM_CLASS = "fr/black_eyes/holograms/api/utils/reflect/Platform";
+    private static final String MAIN_CLASS = "fr/black_eyes/lootchest/Main";
     private static final String FALL_ENTITY = "fr/black_eyes/lootchest/falleffect/FallingPackageEntity";
     private static final String VERSION_FALLBACK = "fr/black_eyes/lootchest/compat/VersionFallback";
     private static final String FALL_RESOLVER = "fr/black_eyes/lootchest/compat/FallClassResolver";
@@ -93,7 +94,7 @@ public final class Patcher {
                     .getBytes(StandardCharsets.UTF_8));
         }
 
-        String[] required = {"version-fallback", "fall-class-resolver", "safe-summon", "legacy-marker"};
+        String[] required = {"version-fallback", "fall-class-resolver", "safe-summon", "legacy-marker", "complete-version"};
         for (String patch : required) {
             if (!applied.contains(patch)) {
                 Files.deleteIfExists(output);
@@ -124,6 +125,9 @@ public final class Patcher {
 
         if (internal.equals(VERSION_CLASS)) {
             changed |= patchVersionFallback(node);
+        }
+        if (internal.equals(MAIN_CLASS)) {
+            changed |= patchCompleteVersion(node);
         }
         if (internal.equals(FALL_ENTITY)) {
             changed |= patchFallEntity(node);
@@ -161,6 +165,28 @@ public final class Patcher {
         method.instructions.remove(prev);
         applied.add("version-fallback");
         return true;
+    }
+
+    /**
+     * Main.getCompleteVersion: "Bukkit.getBukkitVersion().split("-")[0]" liefert auf Paper 26.x "26.2.build.121" und
+     * scheitert danach in Integer.parseInt. Der Wert wird direkt nach dem split auf den numerischen Teil gekuerzt.
+     */
+    private boolean patchCompleteVersion(ClassNode node) {
+        MethodNode method = find(node, "getCompleteVersion");
+        if (method == null) {
+            return false;
+        }
+        for (AbstractInsnNode insn = method.instructions.getFirst(); insn != null; insn = insn.getNext()) {
+            if (insn instanceof MethodInsnNode && ((MethodInsnNode) insn).name.equals("split")
+                    && insn.getNext() != null && insn.getNext().getOpcode() == Opcodes.ICONST_0
+                    && insn.getNext().getNext() != null && insn.getNext().getNext().getOpcode() == Opcodes.AALOAD) {
+                method.instructions.insert(insn.getNext().getNext(), new MethodInsnNode(Opcodes.INVOKESTATIC, VERSION_FALLBACK,
+                        "sanitize", "(Ljava/lang/String;)Ljava/lang/String;", false));
+                applied.add("complete-version");
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

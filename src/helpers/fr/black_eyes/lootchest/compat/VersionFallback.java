@@ -61,6 +61,18 @@ public final class VersionFallback {
         return best;
     }
 
+    /**
+     * Paper ab 26.x liefert z.B. "26.2.build.121-stable" statt "26.2-R0.1-SNAPSHOT". Gibt nur den fuehrenden numerischen
+     * Teil zurueck ("26.2"); Strings ohne fuehrende Zahl bleiben unveraendert.
+     */
+    public static String sanitize(String version) {
+        if (version == null) {
+            return null;
+        }
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("^\\d+(\\.\\d+)*").matcher(version);
+        return m.find() ? m.group() : version;
+    }
+
     /** "26.2.1" -> {26,2,1}; "1.21" -> {1,21,0}; unbrauchbar -> null. */
     static int[] parse(String version) {
         if (version == null) {

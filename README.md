@@ -20,6 +20,7 @@ den exakten Namen `Fallv_<Version>` (es gibt nur `Fallv_26_1`).
 | `version-fallback` | Ist die Serverversion neuer als alles Bekannte (oder gleich, aber andere Plattform), wird der neueste vorhandene NMS-Adapter verwendet (aktuell `v26_1`), mit einer Warnung im Log. Bekannte Versionen verhalten sich unverändert. |
 | `fall-class-resolver` | Sucht zur Serverversion die nächstältere vorhandene `Fallv_*`-Klasse (26.2 → 26.1). |
 | `safe-summon` | Schlägt der NMS-Fall-Effekt fehl, wird ein normaler fallender Block verwendet statt eines Fehlers im Server-Thread. |
+| `complete-version` | Paper 26.x meldet `26.2.build.121-stable`; `Main.getCompleteVersion` machte daraus `262build121` und stürzte beim Start ab. Die Version wird auf den numerischen Teil (`26.2`) gekürzt. |
 | `legacy-marker` | `Bukkit.getVersion().contains("1.7")` trifft nicht mehr zufällig auf Build-Nummern (z. B. 26.11.7) zu. |
 
 Jeder Patch prüft, dass er seine Zielstelle gefunden hat; passt etwas nicht mehr, bricht der Build mit einer Meldung ab.
@@ -40,7 +41,7 @@ das Upstream-JAR strukturell geändert und `src/patcher/Patcher.java` muss angep
 ## Grenzen (bitte beachten)
 
 - **Nicht auf einem echten 26.2-Server getestet.** Paper-Repository und Downloads sind in der Build-Umgebung gesperrt.
-  Getestet wurde die Versionserkennung mit simulierten Bukkit-Versionen (`src/test/CompatTest.java`).
+  Getestet wurde die Versionserkennung (inkl. dem echten Paper-26.2-Format `26.2.build.121-stable` aus einem Server-Log) mit simulierten Bukkit-Versionen (`src/test/CompatTest.java`).
 - Der Fallback nutzt den NMS-Adapter von 26.1 (Hologramme, Fall-Effekt). Hat Minecraft 26.2 interne Klassen geändert,
   fällt der Fall-Effekt auf einen normalen fallenden Block zurück. Beim Hologramm-Adapter deaktiviert die Bibliothek
   das Plugin mit einer klaren Fehlermeldung im Log; dann braucht es einen echten neuen Adapter vom Upstream.
